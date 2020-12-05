@@ -1,7 +1,6 @@
 package edu.ucsb.cs.cs184.mli01.videotest;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.HashMap;
@@ -27,15 +27,13 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     private List<VideoItem> videoItems;
     private static Context context;
     private static HttpProxyCacheServer proxy;
-    private static HashMap<String, String> oldUrlToProxyUrl;
+    private static HashMap<String, MediaItem> oldToProxyURL;
 
     public VideosAdapter(List<VideoItem> videoItems, Context context, HttpProxyCacheServer proxy) {
         this.videoItems = videoItems;
-        VideosAdapter.context = context;
-        VideosAdapter.proxy = proxy;
-        oldUrlToProxyUrl = new HashMap<>();
-
-        Log.i("YOLO", "ADAPTER CREATED");
+        this.context = context;
+        this.proxy = proxy;
+        this.oldToProxyURL = new HashMap<String, MediaItem>();
     }
 
     @NonNull
@@ -56,15 +54,12 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
         holder.player.seekTo(0);
         holder.player.play();
-
-        Log.i("YOLO", "ATTACH");
     }
 
     @Override
     public void onViewDetachedFromWindow(@NonNull VideoViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.player.pause();
-        Log.i("YOLO", "DETACH");
     }
 
     @Override
@@ -99,29 +94,49 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
                     setTrackSelector(trackSelector).
                     setLoadControl(loadControl).
                     build();
+
             player.setRepeatMode(Player.REPEAT_MODE_ONE);
             player.setPlayWhenReady(false);
-
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
             playerView.setPlayer(player);
-            playerView.setControllerHideOnTouch(false);
-            playerView.setControllerShowTimeoutMs(0);
+
+            // video fill entire screen
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+
+            // tap to pause/play
+            playerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (player.isPlaying()) {
+                        player.pause();
+                    } else {
+                        player.play();
+                    }
+                }
+            });
+
+            // hide controller
+            playerView.hideController();
+            playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
+                @Override
+                public void onVisibilityChange(int i) {
+                    if(i == 0) {
+                        playerView.hideController();
+                    }
+                }
+            });
         }
 
         void setVideoData(VideoItem videoItem) {
             String oldURL = videoItem.videoURL;
-            if (!oldUrlToProxyUrl.containsKey(oldURL)) {
-                oldUrlToProxyUrl.put(oldURL, proxy.getProxyUrl(oldURL));
-            }
-            Log.i("YOLO", oldUrlToProxyUrl.get(oldURL));
 
-            player.setMediaItem(MediaItem.fromUri(oldUrlToProxyUrl.get(oldURL)));
+            if (!oldToProxyURL.containsKey(oldURL)) {
+                oldToProxyURL.put(oldURL, MediaItem.fromUri(proxy.getProxyUrl(oldURL)));
+            }
+            player.setMediaItem(oldToProxyURL.get(oldURL));
             player.prepare();
 
             textVideoTitle.setText(videoItem.videoTitle);
             textVideoDescription.setText(videoItem.videoDescription);
-
-            Log.i("YOLO", "SET PATH");
         }
     }
 }

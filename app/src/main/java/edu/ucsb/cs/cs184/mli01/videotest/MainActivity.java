@@ -3,10 +3,8 @@ package edu.ucsb.cs.cs184.mli01.videotest;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 //import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 //import com.amazonaws.regions.Regions;
@@ -72,16 +70,24 @@ public class MainActivity extends AppCompatActivity {
 
         proxy = newProxy();
         videosViewPager.setAdapter(new VideosAdapter(videoItems, getApplicationContext(), proxy));
-
-        Log.i("YOLO", "CREATED");
     }
 
     private HttpProxyCacheServer newProxy() {
-        return new HttpProxyCacheServer(this);
+        return new HttpProxyCacheServer.Builder(this)
+                .maxCacheSize(8L * 1024L * 1024L * 1024L)
+                .build();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // somehow pause all videos
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        proxy.shutdown();
     }
 }
