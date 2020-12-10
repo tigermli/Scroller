@@ -6,21 +6,12 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.os.Bundle;
 import android.util.Log;
 
-//import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-//import com.amazonaws.regions.Regions;
-//import com.amazonaws.services.s3.AmazonS3;
-//import com.amazonaws.services.s3.model.ListObjectsV2Result;
-//import com.amazonaws.services.s3.model.S3ObjectSummary;
-
-import com.danikula.videocache.HttpProxyCacheServer;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 videosViewPager;
-    private HttpProxyCacheServer proxy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         test10.videoDescription = "Living my best life.";
         videoItems.add(test10);
 
-        VideoItem test1 = new VideoItem();
-        test1.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/mckib1.mp4";
-        test1.videoTitle = "Big Spike";
-        test1.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
-        videoItems.add(test1);
+//        VideoItem test1 = new VideoItem();
+//        test1.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/mckib1.mp4";
+//        test1.videoTitle = "Big Spike";
+//        test1.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
+//        videoItems.add(test1);
 
         VideoItem test2 = new VideoItem();
         test2.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/portrait1.mp4";
@@ -62,20 +53,13 @@ public class MainActivity extends AppCompatActivity {
         test2.videoDescription = "Scott Sterling in the house";
         videoItems.add(test2);
 
-        VideoItem test3 = new VideoItem();
-        test3.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/mckib3.mp4";
-        test3.videoTitle = "Ball Hit in my Face";
-        test3.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
-        videoItems.add(test3);
+//        VideoItem test3 = new VideoItem();
+//        test3.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/mckib3.mp4";
+//        test3.videoTitle = "Ball Hit in my Face";
+//        test3.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
+//        videoItems.add(test3);
 
-        proxy = newProxy();
-        videosViewPager.setAdapter(new VideosAdapter(videoItems, getApplicationContext(), proxy));
-    }
-
-    private HttpProxyCacheServer newProxy() {
-        return new HttpProxyCacheServer.Builder(this)
-                .maxCacheSize(8L * 1024L * 1024L * 1024L)
-                .build();
+        videosViewPager.setAdapter(new VideosAdapter(videoItems, getApplicationContext()));
     }
 
     @Override
@@ -88,6 +72,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        proxy.shutdown();
     }
 }

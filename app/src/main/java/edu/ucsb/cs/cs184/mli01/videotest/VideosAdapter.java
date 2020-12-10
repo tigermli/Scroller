@@ -1,22 +1,30 @@
 package edu.ucsb.cs.cs184.mli01.videotest;
 
 import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.danikula.videocache.HttpProxyCacheServer;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DataSchemeDataSource;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -26,14 +34,18 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
     private List<VideoItem> videoItems;
     private static Context context;
-    private static HttpProxyCacheServer proxy;
-    private static HashMap<String, MediaItem> oldToProxyURL;
+    private static CacheDataSourceFactory cacheFactory;
+    private static HashMap<String, MediaSource> urlToCache;
 
-    public VideosAdapter(List<VideoItem> videoItems, Context context, HttpProxyCacheServer proxy) {
+    public VideosAdapter(List<VideoItem> videoItems, Context context) {
         this.videoItems = videoItems;
         this.context = context;
-        this.proxy = proxy;
-        this.oldToProxyURL = new HashMap<String, MediaItem>();
+        this.cacheFactory = new CacheDataSourceFactory(
+                context,
+                4 * 1024 * 1024 * 1024,
+                1024 * 1024
+        );
+        this.urlToCache = new HashMap<>();
     }
 
     @NonNull
@@ -80,6 +92,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
+
             playerView = itemView.findViewById(R.id.videoView);
             textVideoTitle = itemView.findViewById(R.id.textVideoTitle);
             textVideoDescription = itemView.findViewById(R.id.textVideoDescription);
@@ -100,7 +113,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
             playerView.setPlayer(player);
 
             // video fill entire screen
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+            // playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
 
             // tap to pause/play
             playerView.setOnClickListener(new View.OnClickListener() {
@@ -127,12 +140,18 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         }
 
         void setVideoData(VideoItem videoItem) {
-            String oldURL = videoItem.videoURL;
+            String url = videoItem.videoURL;
 
-            if (!oldToProxyURL.containsKey(oldURL)) {
-                oldToProxyURL.put(oldURL, MediaItem.fromUri(proxy.getProxyUrl(oldURL)));
+            if (!urlToCache.containsKey(url)) {
+                Log.i("YOLO", "PUT KEY");
+                urlToCache.put(
+                        url,
+                        new ProgressiveMediaSource.Factory(cacheFactory).createMediaSource(MediaItem.fromUri(videoItem.videoURL))
+                );
             }
-            player.setMediaItem(oldToProxyURL.get(oldURL));
+//            player.setMediaItem(MediaItem.fromUri(videoItem.videoURL));
+
+            player.setMediaSource(urlToCache.get(url));
             player.prepare();
 
             textVideoTitle.setText(videoItem.videoTitle);
