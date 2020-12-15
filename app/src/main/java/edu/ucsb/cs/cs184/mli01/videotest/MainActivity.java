@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         JsonReader.loadAWSKeys();
         JSONArray awsKeys = null;
         List<String> videoKeys = new ArrayList<>();
-        System.out.println("mouse" + JsonReader.awsKeys);
         try {
             awsKeys = (JSONArray) JsonReader.awsKeys.get("cs184keys");
             for (int i = 0; i < awsKeys.length(); i++){
@@ -38,7 +37,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        for (int i = 0; i < 15; i++) {
+
+//        VideoItem itema = new VideoItem();
+//        itema.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/cdm9.mp4";
+//        itema.videoTitle = "Title";
+//        itema.videoDescription = "Description";
+//        videoItems.add(itema);
+
+        for (int i = 0; i < VideosAdapter.batchCount; i++) {
             VideoItem item = new VideoItem();
             item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i);
             item.videoTitle = "Title";
@@ -46,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             videoItems.add(item);
         }
 
-        adapter = new VideosAdapter(videoItems, getApplicationContext());
+        adapter = new VideosAdapter(videoItems, getApplicationContext(), videoKeys);
 
         ViewPager2 videosViewPager = findViewById(R.id.videosViewPager);
         videosViewPager.setAdapter(adapter);

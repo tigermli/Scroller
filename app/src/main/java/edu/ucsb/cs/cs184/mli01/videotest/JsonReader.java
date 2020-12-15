@@ -41,29 +41,12 @@ public class JsonReader {
         try {
             awsKeys = JsonReader.readJsonFromUrl("https://moo123moo125.s3-us-west-2.amazonaws.com/keys.json");
 
-            System.out.println("wilson");
-            System.out.println("wilson" + awsKeys);
-
-//            System.out.println("moomoo");
-//            System.out.println(awsKeys);
-//            System.out.println("meemee");
 
         } catch (IOException e) {
-
-            System.out.println("apple");
-
-            //e.printStackTrace();
+            e.printStackTrace();
         } catch (JSONException e) {
-
-            System.out.println("peach");
-
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
-//    public static void main(String[] args) throws IOException, JSONException {
-//        JSONObject json = readJsonFromUrl("https://graph.facebook.com/19292868552");
-//        System.out.println(json.toString());
-//        System.out.println(json.get("id"));
-//    }
 }

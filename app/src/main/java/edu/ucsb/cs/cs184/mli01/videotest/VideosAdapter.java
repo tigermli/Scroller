@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -23,12 +24,15 @@ import androidx.recyclerview.widget.RecyclerView;
 public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewHolder> {
 
     private List<VideoItem> videoItems;
+    private List<String> videoKeys;
     public static SimpleExoPlayer exoPlayer;
+    public static Integer batchCount = 3;
     private static Context context;
     private static HttpProxyCacheServer proxy;
 
-    public VideosAdapter(List<VideoItem> videoItems, Context context) {
+    public VideosAdapter(List<VideoItem> videoItems, Context context, List<String> videoKeys) {
         this.videoItems = videoItems;
+        this.videoKeys = videoKeys;
         this.context = context;
         this.exoPlayer = createExoplayer();
         this.proxy = new HttpProxyCacheServer.Builder(context).build();
@@ -58,6 +62,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     @NonNull
     @Override
     public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         return new VideoViewHolder(
                 LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.item_container_video,
@@ -94,13 +99,32 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
+
+        if ((position + 1)%VideosAdapter.batchCount == 0){
+            newBatch(position+1);
+        }
+
         Log.i("YOLO", "BIND");
     }
 
     @Override
     public void onViewRecycled(@NonNull VideoViewHolder holder) {
         Log.i("YOLO", "RELEASE");
+
         super.onViewRecycled(holder);
+    }
+
+    public void newBatch(int position) {
+
+        for (int i = position; i < position + VideosAdapter.batchCount; i++) {
+            VideoItem item = new VideoItem();
+            item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i);
+            item.videoTitle = "Title";
+            item.videoDescription = "Description";
+            videoItems.add(item);
+        }
+
+
     }
 
     @Override
