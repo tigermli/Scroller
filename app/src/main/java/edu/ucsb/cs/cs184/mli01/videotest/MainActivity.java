@@ -4,7 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,66 +24,27 @@ public class MainActivity extends AppCompatActivity {
 
         List<VideoItem> videoItems = new ArrayList<>();
 
-        VideoItem test1 = new VideoItem();
-        test1.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/cuba18.mp4";
-        test1.videoTitle = "Big Spike MP4";
-        test1.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
-        videoItems.add(test1);
-
-        VideoItem test2 = new VideoItem();
-        test2.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/tik1.mp4";
-        test2.videoTitle = "Bolley Ball";
-        test2.videoDescription = "Living my best life.";
-        videoItems.add(test2);
-
-        VideoItem test3 = new VideoItem();
-        test3.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/portrait1.mp4";
-        test3.videoTitle = "ball hit in my face";
-        test3.videoDescription = "Scott Sterling in the house";
-        videoItems.add(test3);
-
-        VideoItem test4 = new VideoItem();
-        test4.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/tik1.mp4";
-        test4.videoTitle = "Bolley Ball";
-        test4.videoDescription = "Living my best life.";
-        videoItems.add(test4);
-
-        VideoItem test5 = new VideoItem();
-        test5.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/portrait1.mp4";
-        test5.videoTitle = "ball hit in my face";
-        test5.videoDescription = "Scott Sterling in the house";
-        videoItems.add(test5);
-
-        VideoItem test6 = new VideoItem();
-        test6.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/cuba18.mp4";
-        test6.videoTitle = "Big Spike MP4";
-        test6.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
-        videoItems.add(test6);
-
-        VideoItem test7 = new VideoItem();
-        test7.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/tik1.mp4";
-        test7.videoTitle = "Bolley Ball";
-        test7.videoDescription = "Living my best life.";
-        videoItems.add(test7);
-
-        VideoItem test8 = new VideoItem();
-        test8.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/portrait1.mp4";
-        test8.videoTitle = "ball hit in my face";
-        test8.videoDescription = "Scott Sterling in the house";
-        videoItems.add(test8);
-
-//
-//        VideoItem test1 = new VideoItem();
-//        test1.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/mckib1.mp4";
-//        test1.videoTitle = "Big Spike";
-//        test1.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
-//        videoItems.add(test1);
-//
-//        VideoItem test3 = new VideoItem();
-//        test3.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/mckib3.mp4";
-//        test3.videoTitle = "Ball Hit in my Face";
-//        test3.videoDescription = "Made a big shot against the opposing team. Work hard, play hard.";
-//        videoItems.add(test3);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        JsonReader.loadAWSKeys();
+        JSONArray awsKeys = null;
+        List<String> videoKeys = new ArrayList<>();
+        System.out.println("mouse" + JsonReader.awsKeys);
+        try {
+            awsKeys = (JSONArray) JsonReader.awsKeys.get("cs184keys");
+            for (int i = 0; i < awsKeys.length(); i++){
+                videoKeys.add( (String)awsKeys.get(i)  );
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < 15; i++) {
+            VideoItem item = new VideoItem();
+            item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i);
+            item.videoTitle = "Title";
+            item.videoDescription = "Description";
+            videoItems.add(item);
+        }
 
         adapter = new VideosAdapter(videoItems, getApplicationContext());
 
