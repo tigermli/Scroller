@@ -26,6 +26,8 @@ android {
 }
 
 dependencies {
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+    compile 'com.danikula:videocache:2.7.1'
     implementation 'com.danikula:videocache:2.7.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.12.1'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.1'
