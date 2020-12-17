@@ -1,8 +1,12 @@
 package edu.ucsb.cs.cs184.mli01.videotest;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.text.Html;
 import android.util.Log;
+import android.view.ActionProvider;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,6 +17,7 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.List;
@@ -22,13 +27,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewHolder> {
 
-    private List<VideoItem> videoItems;
+//    public static final Integer batchCount = 3;
+//    private List<String> videoKeys;
+
+    public List<VideoItem> videoItems;
+    public int currentIndex;
     public static SimpleExoPlayer exoPlayer;
     private static Context context;
     private static HttpProxyCacheServer proxy;
 
     public VideosAdapter(List<VideoItem> videoItems, Context context) {
         this.videoItems = videoItems;
+        this.currentIndex = 0;
         this.context = context;
         this.exoPlayer = createExoplayer();
         this.proxy = new HttpProxyCacheServer.Builder(context).build();
@@ -43,8 +53,6 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
                 setLoadControl(new DefaultLoadControl()).
                 build();
         player.setRepeatMode(Player.REPEAT_MODE_ONE);
-        player.setPlayWhenReady(false);
-
         return player;
     }
 
@@ -71,14 +79,19 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     public void onViewAttachedToWindow(@NonNull VideoViewHolder holder) {
         super.onViewAttachedToWindow(holder);
 
-        int position = holder.getAdapterPosition();
-        VideoItem item = videoItems.get(position);
+//        int position = holder.getAdapterPosition();
+        currentIndex = holder.getAdapterPosition() % videoItems.size();
+        VideoItem item = videoItems.get(currentIndex);
 
         holder.setVideoData(item);
-
         holder.playerView.setPlayer(exoPlayer);
+
         exoPlayer.setMediaItem(MediaItem.fromUri(proxy.getProxyUrl(item.videoURL)));
         exoPlayer.prepare();
+        if (item.seek > 0) {
+            exoPlayer.seekTo(item.seek);
+            item.seek = 0;
+        }
         exoPlayer.setPlayWhenReady(true);
 
         Log.i("YOLO", "ATTACH");
@@ -94,14 +107,20 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        Log.i("YOLO", "BIND");
+//        if ((position + 1)%VideosAdapter.batchCount == 0){
+//            newBatch(position+1);
+//        }
     }
 
-    @Override
-    public void onViewRecycled(@NonNull VideoViewHolder holder) {
-        Log.i("YOLO", "RELEASE");
-        super.onViewRecycled(holder);
-    }
+//    public void newBatch(int position) {
+//        for (int i = position; i < position + VideosAdapter.batchCount; i++) {
+//            VideoItem item = new VideoItem();
+//            item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i);
+//            item.videoTitle = "Title";
+//            item.videoDescription = "Description";
+//            videoItems.add(item);
+//        }
+//    }
 
     @Override
     public int getItemCount() {
@@ -119,40 +138,27 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
             textVideoTitle = itemView.findViewById(R.id.textVideoTitle);
             textVideoDescription = itemView.findViewById(R.id.textVideoDescription);
 
-//            playerView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                @Override
-//                public void onPrepared(MediaPlayer mp) {
-//                    mp.setLooping(true);
-//                }
-//            });
+            playerView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return false;
+                }
+            });
 
-//            playerView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                @Override
-//                public void onPrepared(MediaPlayer mp) {
-//                    float videoRatio = mp.getVideoHeight() / (float) mp.getVideoWidth();
-//                    float screenRatio = playerView.getHeight() / (float)
-//                            playerView.getWidth();
-//                    float scaleY = videoRatio / screenRatio;
-//
-//                    playerView.setScaleY(scaleY);
-//
-////                    if (scaleY < 1f) {
-////                        playerView.setScaleY(scaleY);
-////                    } else {
-////                        playerView.setScaleX(1f / scaleY);
-////                    }
-//                }
-//            });
-
-            playerView.setControllerHideOnTouch(false);
-            playerView.setControllerShowTimeoutMs(0);
+            // hide controller
+            playerView.hideController();
+            playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
+                @Override
+                public void onVisibilityChange(int visibility) {
+                    playerView.hideController();
+                }
+            });
         }
 
-
         void setVideoData(VideoItem videoItem) {
-            textVideoTitle.setText(videoItem.videoTitle);
+            String titleString = "<font color=#e74c3c>/</font> " + videoItem.videoTitle;
+            textVideoTitle.setText(Html.fromHtml(titleString));
             textVideoDescription.setText(videoItem.videoDescription);
-
             Log.i("YOLO", "SET DATA");
         }
     }

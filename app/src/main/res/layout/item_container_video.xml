@@ -13,11 +13,6 @@
         android:layout_height="match_parent"
         android:longClickable="true"/>
 
-<!--    <VideoView-->
-<!--        android:id="@+id/videoView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"/>-->
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/titleTopGuideline"
         android:layout_width="wrap_content"
@@ -39,12 +34,19 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.85"/>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/infoLeftGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/infoLeftGuideline"
         app:layout_constraintEnd_toEndOf="@+id/infoRightGuideline"
         app:layout_constraintTop_toTopOf="@+id/titleTopGuideline"
         app:layout_constraintBottom_toTopOf="@+id/descriptionBottomGuideline">
@@ -62,7 +64,7 @@
             android:shadowDy="0"
             android:shadowRadius="15"
             android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textStyle="bold|italic" />
 
         <TextView
             android:id="@+id/spacingText"
