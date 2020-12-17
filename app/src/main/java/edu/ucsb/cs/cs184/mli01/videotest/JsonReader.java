@@ -1,5 +1,8 @@
 package edu.ucsb.cs.cs184.mli01.videotest;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,9 +10,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class JsonReader {
 
@@ -37,16 +37,12 @@ public class JsonReader {
     }
 
     public static void loadAWSKeys(){
-
         try {
             awsKeys = JsonReader.readJsonFromUrl("https://moo123moo125.s3-us-west-2.amazonaws.com/keys.json");
-
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
 }

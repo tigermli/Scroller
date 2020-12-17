@@ -10,40 +10,129 @@
         app:surface_type="texture_view"
         android:id="@+id/videoView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-<!--    <VideoView-->
-<!--        android:id="@+id/videoView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"/>-->
+        android:layout_height="match_parent"
+        android:longClickable="true" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/titleTopGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7"/>
+        app:layout_constraintGuide_percent="0.7" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/descriptionBottomGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9"/>
+        app:layout_constraintGuide_percent="0.95" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/infoRightGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.85"/>
+        app:layout_constraintGuide_percent="0.75" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/infoLeftGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/buttonsRightGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.98" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_gravity="end|bottom"
+        app:layout_constraintEnd_toEndOf="@+id/buttonsRightGuideline"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/slowButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_slow"
+            app:backgroundTint="@color/buttonSloMo" />
+
+        <TextView
+            android:text="0000"
+            android:visibility="invisible"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:autoSizeTextType="uniform"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/likeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_like"
+            app:backgroundTint="@color/white" />
+
+        <TextView
+            android:text="3908"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/exo_white"
+            android:autoSizeTextType="uniform"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_comment"
+            app:backgroundTint="@color/white" />
+
+        <TextView
+            android:text="34"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/exo_white"
+            android:autoSizeTextType="uniform"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_comment" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/infoLeftGuideline"
         app:layout_constraintEnd_toEndOf="@+id/infoRightGuideline"
         app:layout_constraintTop_toTopOf="@+id/titleTopGuideline"
         app:layout_constraintBottom_toTopOf="@+id/descriptionBottomGuideline">
@@ -52,7 +141,7 @@
             android:id="@+id/textVideoTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="1.5"
             android:autoSizeTextType="uniform"
             android:paddingEnd="5dp"
             android:paddingStart="5dp"
@@ -61,10 +150,9 @@
             android:shadowDy="0"
             android:shadowRadius="15"
             android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textStyle="bold|italic" />
 
         <TextView
-            android:id="@+id/spacingText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"

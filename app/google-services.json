@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "43343407865",
+    "firebase_url": "https://scroller-a0114-default-rtdb.firebaseio.com",
+    "project_id": "scroller-a0114",
+    "storage_bucket": "scroller-a0114.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43343407865:android:3f53b8ed0a0265600d9028",
+        "android_client_info": {
+          "package_name": "edu.ucsb.cs.cs184.mli01.videotest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43343407865-d144dcq10lsdabj3a47cmj0lbrql8nrp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6FskHb8UWvIJSnGICXmghS0p6kqtlulY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43343407865-d144dcq10lsdabj3a47cmj0lbrql8nrp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
