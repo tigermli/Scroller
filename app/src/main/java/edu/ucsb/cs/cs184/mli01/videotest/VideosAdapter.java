@@ -1,10 +1,11 @@
 package edu.ucsb.cs.cs184.mli01.videotest;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.media.MediaPlayer;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.text.Html;
 import android.util.Log;
-import android.view.ActionProvider;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,16 +15,20 @@ import android.widget.TextView;
 import com.danikula.videocache.HttpProxyCacheServer;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewHolder> {
 
@@ -35,6 +40,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     public static SimpleExoPlayer exoPlayer;
     private static Context context;
     private static HttpProxyCacheServer proxy;
+    public static ViewPager2 videosViewPager;
 
     public VideosAdapter(List<VideoItem> videoItems, Context context) {
         this.videoItems = videoItems;
@@ -42,6 +48,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         this.context = context;
         this.exoPlayer = createExoplayer();
         this.proxy = new HttpProxyCacheServer.Builder(context).build();
+        this.videosViewPager = null;
 
         Log.i("YOLO", "ADAPTER CREATED");
     }
@@ -61,6 +68,10 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
             exoPlayer.release();
             exoPlayer = null;
         }
+    }
+
+    public void setPager(ViewPager2 videosViewPager) {
+        this.videosViewPager=videosViewPager;
     }
 
     @NonNull
@@ -101,6 +112,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     public void onViewDetachedFromWindow(@NonNull VideoViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.playerView.setPlayer(null);
+        exoPlayer.setPlaybackParameters(new PlaybackParameters(1f));
 
         Log.i("YOLO", "DETACH");
     }
@@ -131,19 +143,102 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
         PlayerView playerView;
         TextView textVideoTitle, textVideoDescription;
+        FloatingActionButton slowMoFab, likeFab, commentFab;
+        boolean isLiked;
+        float currentVolume;
 
+        @SuppressLint("ClickableViewAccessibility")
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             playerView = itemView.findViewById(R.id.videoView);
             textVideoTitle = itemView.findViewById(R.id.textVideoTitle);
             textVideoDescription = itemView.findViewById(R.id.textVideoDescription);
+            isLiked = false;
+            currentVolume = 0;
 
-            playerView.setOnTouchListener(new View.OnTouchListener() {
+            slowMoFab = itemView.findViewById(R.id.slowButton);
+            slowMoFab.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
+                public boolean onTouch(View view, MotionEvent event) {
+                    switch (event.getActionMasked()) {
+                        case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_POINTER_DOWN: {
+                            // prevent recycler view from scrolling if fab click drags
+                            if (videosViewPager != null) {
+                                videosViewPager.setUserInputEnabled(false);
+                            }
+
+                            currentVolume = exoPlayer.getVolume();
+                            exoPlayer.setVolume(0f);
+                            slowMoFab.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.buttonSloMoPress)));
+                            exoPlayer.setPlaybackParameters(new PlaybackParameters(0.2f));
+                            break;
+                        }
+                        case MotionEvent.ACTION_UP:
+                        case MotionEvent.ACTION_POINTER_UP: {
+                            exoPlayer.setPlaybackParameters(new PlaybackParameters(1f));
+                            slowMoFab.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.buttonSloMo)));
+                            exoPlayer.setVolume(currentVolume);
+
+                            // re-enable scrolling
+                            if (videosViewPager != null) {
+                                videosViewPager.setUserInputEnabled(true);
+                            }
+                            break;
+                        }
+                    }
                     return false;
                 }
             });
+
+            likeFab = itemView.findViewById(R.id.likeButton);
+            likeFab.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    switch (event.getActionMasked()) {
+                        case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_POINTER_DOWN: {
+                            // prevent recycler view from scrolling if fab click drags
+                            if (videosViewPager != null) {
+                                videosViewPager.setUserInputEnabled(false);
+                            }
+                            isLiked = !isLiked;
+                            int color = isLiked ? R.color.buttonLike : R.color.white;
+                            likeFab.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(color)));
+                            break;
+                        }
+                        case MotionEvent.ACTION_UP:
+                        case MotionEvent.ACTION_POINTER_UP: {
+                            // re-enable scrolling
+                            if (videosViewPager != null) {
+                                videosViewPager.setUserInputEnabled(true);
+                            }
+                            break;
+                        }
+                    }
+                    return false;
+                }
+            });
+
+            // click screen to alternate pause/play
+            playerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (exoPlayer.isPlaying()) {
+                        exoPlayer.pause();
+                    } else {
+                        exoPlayer.play();
+                    }
+                }
+            });
+
+            // fill screen with video by height/width depending on orientation
+            int orientation = context.getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);
+            } else {
+                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT);
+            }
 
             // hide controller
             playerView.hideController();
@@ -156,9 +251,15 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         }
 
         void setVideoData(VideoItem videoItem) {
+            // add red accent backslash to front of titles
             String titleString = "<font color=#e74c3c>/</font> " + videoItem.videoTitle;
             textVideoTitle.setText(Html.fromHtml(titleString));
             textVideoDescription.setText(videoItem.videoDescription);
+
+            isLiked = videoItem.isLiked;
+            if (isLiked) {
+                likeFab.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.buttonLike)));
+            }
             Log.i("YOLO", "SET DATA");
         }
     }

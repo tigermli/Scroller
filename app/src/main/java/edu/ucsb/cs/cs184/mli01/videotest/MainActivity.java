@@ -1,8 +1,5 @@
 package edu.ucsb.cs.cs184.mli01.videotest;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -14,6 +11,9 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 item.videoTitle = "Title";
                 item.videoDescription = "Description";
                 item.seek = (i+1 == savedIndex) ? savedSeek : 0;
+                item.isLiked = false;
                 videoItems.add(item);
             }
         } catch (JSONException e) {
@@ -66,16 +67,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         VideoItem item1 = new VideoItem();
-        item1.videoURL = "https://drive.google.com/uc?export=download&id=1ZsKfCCNqWKT1AKlzI0X6nx3E_XfHFQDx";
+        item1.videoURL = "https://drive.google.com/uc?export=download&id=1qLQiQ30t2cl6E3rESAw64zvD1wo-X0-O";
         item1.videoTitle = "Title";
         item1.videoDescription = "Description";
         item1.seek = (savedIndex == 0) ? savedSeek : 0;
+        item1.isLiked = true;
         videoItems.add(0, item1);
 
 //        adapter = new VideosAdapter(videoItems, getApplicationContext(), videoKeys);
         adapter = new VideosAdapter(videoItems, getApplicationContext());
         ViewPager2 videosViewPager = findViewById(R.id.videosViewPager);
         videosViewPager.setAdapter(adapter);
+
+        adapter.setPager(videosViewPager);
     }
 
     @Override
