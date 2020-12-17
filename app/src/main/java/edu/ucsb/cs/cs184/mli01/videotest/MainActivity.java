@@ -52,12 +52,14 @@ public class MainActivity extends AppCompatActivity {
         JsonReader.loadAWSKeys();
         try {
             JSONArray awsKeys = (JSONArray) JsonReader.awsKeys.get("cs184keys");
+            JSONArray awsTitles = (JSONArray) JsonReader.awsKeys.get("cs184titles");
+            JSONArray awsDescriptions = (JSONArray) JsonReader.awsKeys.get("cs184descriptions");
 
             for (int i = 0; i < awsKeys.length(); i++){
                 VideoItem item = new VideoItem();
                 item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + awsKeys.get(i);
-                item.videoTitle = "Title";
-                item.videoDescription = "Description";
+                item.videoTitle = ((String) awsTitles.get(i)).trim();
+                item.videoDescription = ((String) awsDescriptions.get(i)).trim();
                 item.seek = (i+1 == savedIndex) ? savedSeek : 0;
                 item.isLiked = false;
                 videoItems.add(item);
@@ -68,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
         VideoItem item1 = new VideoItem();
         item1.videoURL = "https://drive.google.com/uc?export=download&id=1qLQiQ30t2cl6E3rESAw64zvD1wo-X0-O";
-        item1.videoTitle = "Title";
-        item1.videoDescription = "Description";
+        item1.videoTitle = "UCSB Crew";
+        item1.videoDescription = "Long day on Cachuma 4x6K 24spm #ratio";
         item1.seek = (savedIndex == 0) ? savedSeek : 0;
         item1.isLiked = true;
         videoItems.add(0, item1);

@@ -136,7 +136,8 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
     @Override
     public int getItemCount() {
-        return videoItems.size();
+        // make it look infinite
+        return Integer.MAX_VALUE;
     }
 
     static class VideoViewHolder extends RecyclerView.ViewHolder {
