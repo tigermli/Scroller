@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,9 +31,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewHolder> {
 
-//    public static final Integer batchCount = 3;
-//    private List<String> videoKeys;
-
     public List<VideoItem> videoItems;
     public int currentIndex;
     public static SimpleExoPlayer exoPlayer;
@@ -49,8 +45,6 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         this.exoPlayer = createExoplayer();
         this.proxy = new HttpProxyCacheServer.Builder(context).build();
         this.videosViewPager = null;
-
-        Log.i("YOLO", "ADAPTER CREATED");
     }
 
     private SimpleExoPlayer createExoplayer() {
@@ -104,8 +98,6 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
             item.seek = 0;
         }
         exoPlayer.setPlayWhenReady(true);
-
-        Log.i("YOLO", "ATTACH");
     }
 
     @Override
@@ -113,26 +105,11 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         super.onViewDetachedFromWindow(holder);
         holder.playerView.setPlayer(null);
         exoPlayer.setPlaybackParameters(new PlaybackParameters(1f));
-
-        Log.i("YOLO", "DETACH");
     }
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-//        if ((position + 1)%VideosAdapter.batchCount == 0){
-//            newBatch(position+1);
-//        }
     }
-
-//    public void newBatch(int position) {
-//        for (int i = position; i < position + VideosAdapter.batchCount; i++) {
-//            VideoItem item = new VideoItem();
-//            item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i);
-//            item.videoTitle = "Title";
-//            item.videoDescription = "Description";
-//            videoItems.add(item);
-//        }
-//    }
 
     @Override
     public int getItemCount() {
@@ -261,7 +238,6 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
             if (isLiked) {
                 likeFab.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.buttonLike)));
             }
-            Log.i("YOLO", "SET DATA");
         }
     }
 }
