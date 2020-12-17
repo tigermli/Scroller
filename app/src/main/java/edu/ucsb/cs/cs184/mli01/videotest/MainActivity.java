@@ -28,11 +28,19 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         JsonReader.loadAWSKeys();
         JSONArray awsKeys = null;
+        JSONArray awsTitles = null;
+        JSONArray awsDescriptions = null;
         List<String> videoKeys = new ArrayList<>();
+        List<String> videoTitles = new ArrayList<>();
+        List<String> videoDescriptions = new ArrayList<>();
         try {
             awsKeys = (JSONArray) JsonReader.awsKeys.get("cs184keys");
+            awsTitles = (JSONArray) JsonReader.awsKeys.get("cs184titles");
+            awsDescriptions = (JSONArray) JsonReader.awsKeys.get("cs184descriptions");
             for (int i = 0; i < awsKeys.length(); i++){
                 videoKeys.add( (String)awsKeys.get(i)  );
+                videoTitles.add( (String)awsTitles.get(i)  );
+                videoDescriptions.add( (String)awsDescriptions.get(i)  );
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -47,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < VideosAdapter.batchCount; i++) {
             VideoItem item = new VideoItem();
             item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i);
-            item.videoTitle = "Title";
-            item.videoDescription = "Description";
+            item.videoTitle = videoTitles.get(i);
+            item.videoDescription = videoDescriptions.get(i);
             videoItems.add(item);
         }
 
-        adapter = new VideosAdapter(videoItems, getApplicationContext(), videoKeys);
+        adapter = new VideosAdapter(videoItems, getApplicationContext(), videoKeys, videoTitles, videoDescriptions);
 
         ViewPager2 videosViewPager = findViewById(R.id.videosViewPager);
         videosViewPager.setAdapter(adapter);

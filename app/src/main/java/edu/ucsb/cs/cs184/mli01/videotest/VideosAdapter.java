@@ -25,14 +25,18 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
     private List<VideoItem> videoItems;
     private List<String> videoKeys;
+    private List<String> videoTitles;
+    private List<String> videoDescriptions;
     public static SimpleExoPlayer exoPlayer;
     public static Integer batchCount = 3;
     private static Context context;
     private static HttpProxyCacheServer proxy;
 
-    public VideosAdapter(List<VideoItem> videoItems, Context context, List<String> videoKeys) {
+    public VideosAdapter(List<VideoItem> videoItems, Context context, List<String> videoKeys, List<String> videoTitles, List<String> videoDescriptions) {
         this.videoItems = videoItems;
         this.videoKeys = videoKeys;
+        this.videoTitles = videoTitles;
+        this.videoDescriptions = videoDescriptions;
         this.context = context;
         this.exoPlayer = createExoplayer();
         this.proxy = new HttpProxyCacheServer.Builder(context).build();
@@ -118,9 +122,9 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
         for (int i = position; i < position + VideosAdapter.batchCount; i++) {
             VideoItem item = new VideoItem();
-            item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i);
-            item.videoTitle = "Title";
-            item.videoDescription = "Description";
+            item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + videoKeys.get(i%videoKeys.size());
+            item.videoTitle = videoTitles.get(i%videoKeys.size());
+            item.videoDescription = videoDescriptions.get(i%videoKeys.size());
             videoItems.add(item);
         }
 
