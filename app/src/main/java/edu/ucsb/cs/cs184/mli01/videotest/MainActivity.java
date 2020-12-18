@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 item.videoURL = "https://moo123moo125.s3-us-west-2.amazonaws.com/" + awsKeys.get(i);
                 item.videoTitle = ((String) awsTitles.get(i)).trim();
                 item.videoDescription = ((String) awsDescriptions.get(i)).trim();
-                item.seek = (i+2 == savedIndex) ? savedSeek : 0;
+                item.seek = (i == savedIndex) ? savedSeek : 0;
                 item.isLiked = false;
                 videoItems.add(item);
             }
